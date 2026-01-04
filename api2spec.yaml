@@ -1,0 +1,53 @@
+# api2spec configuration file
+# https://github.com/api2spec/api2spec
+
+framework: flask
+output: openapi.yaml
+format: yaml
+openapi:
+    version: 3.0.3
+    info:
+        title: Tea Brewing API
+        description: Flask fixture API for api2spec. TIF-compliant.
+        version: 1.0.0
+        termsOfService: ""
+        contact:
+            name: ""
+            url: ""
+            email: ""
+        license:
+            name: ""
+            url: ""
+    servers: []
+    tags: []
+    security:
+        schemes: {}
+        default: []
+source:
+    paths:
+        - .
+    include:
+        - '**/*.py'
+    exclude:
+        - vendor/**
+        - '**/*_test.go'
+        - '**/testdata/**'
+        - node_modules/**
+        - .git/**
+        - dist/**
+        - build/**
+        - '**/*.pb.go'
+        - '**/mock*.go'
+        - '**/mocks/**'
+generation:
+    mode: full
+    merge: false
+    strictMode: false
+    defaultResponses:
+        - "200"
+        - "400"
+        - "500"
+watch:
+    enabled: false
+    debounce: 500
+    onChange: ""

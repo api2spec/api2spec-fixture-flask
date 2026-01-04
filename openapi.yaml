@@ -1,0 +1,775 @@
+openapi: 3.0.3
+info:
+  title: Tea Brewing API
+  description: Flask fixture API for api2spec. TIF-compliant.
+  version: 1.0.0
+paths:
+  /brew:
+    get:
+      tags:
+        - brew
+      operationId: getBrew
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /brews:
+    get:
+      tags:
+        - brews
+      operationId: getList_brews
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    post:
+      tags:
+        - brews
+      operationId: postCreate_brew
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /brews/{brew_id}/steeps:
+    get:
+      tags:
+        - brews
+      operationId: getList_steeps
+      parameters:
+        - name: brew_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    post:
+      tags:
+        - brews
+      operationId: postCreate_steep
+      parameters:
+        - name: brew_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /brews/{id}:
+    get:
+      tags:
+        - brews
+      operationId: getGet_brew
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    delete:
+      tags:
+        - brews
+      operationId: deleteDelete_brew
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    patch:
+      tags:
+        - brews
+      operationId: patchPatch_brew
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /health:
+    get:
+      tags:
+        - health
+      operationId: getHealth
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /health/live:
+    get:
+      tags:
+        - health
+      operationId: getLive
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /health/ready:
+    get:
+      tags:
+        - health
+      operationId: getReady
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /teapots:
+    get:
+      tags:
+        - teapots
+      operationId: getList_teapots
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    post:
+      tags:
+        - teapots
+      operationId: postCreate_teapot
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /teapots/{id}:
+    get:
+      tags:
+        - teapots
+      operationId: getGet_teapot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    put:
+      tags:
+        - teapots
+      operationId: putUpdate_teapot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    delete:
+      tags:
+        - teapots
+      operationId: deleteDelete_teapot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    patch:
+      tags:
+        - teapots
+      operationId: patchPatch_teapot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /teapots/{teapot_id}/brews:
+    get:
+      tags:
+        - teapots
+      operationId: getList_teapot_brews
+      parameters:
+        - name: teapot_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /teas:
+    get:
+      tags:
+        - teas
+      operationId: getList_teas
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    post:
+      tags:
+        - teas
+      operationId: postCreate_tea
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+  /teas/{id}:
+    get:
+      tags:
+        - teas
+      operationId: getGet_tea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    put:
+      tags:
+        - teas
+      operationId: putUpdate_tea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    delete:
+      tags:
+        - teas
+      operationId: deleteDelete_tea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+    patch:
+      tags:
+        - teas
+      operationId: patchPatch_tea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+components:
+  schemas:
+    Brew:
+      type: object
+      title: Brew
+      properties:
+        completed_at:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        id:
+          type: string
+        model_config:
+          type: object
+        notes:
+          type: object
+        started_at:
+          type: string
+          format: date-time
+        status:
+          type: object
+        tea_id:
+          type: string
+        teapot_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        water_temp_celsius:
+          type: integer
+    BrewQuery:
+      type: object
+      title: BrewQuery
+      properties:
+        limit:
+          type: integer
+        model_config:
+          type: object
+        page:
+          type: integer
+        status:
+          type: object
+        tea_id:
+          type: object
+        teapot_id:
+          type: object
+    BrewWithDetails:
+      type: object
+      title: BrewWithDetails
+      properties:
+        completed_at:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        id:
+          type: string
+        model_config:
+          type: object
+        notes:
+          type: object
+        started_at:
+          type: string
+          format: date-time
+        status:
+          type: object
+        tea:
+          type: object
+        tea_id:
+          type: string
+        teapot:
+          type: object
+        teapot_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        water_temp_celsius:
+          type: integer
+    CreateBrewRequest:
+      type: object
+      title: CreateBrewRequest
+      properties:
+        model_config:
+          type: object
+        notes:
+          type: object
+        tea_id:
+          type: string
+        teapot_id:
+          type: string
+        water_temp_celsius:
+          type: object
+    CreateSteepRequest:
+      type: object
+      title: CreateSteepRequest
+      properties:
+        duration_seconds:
+          type: integer
+        model_config:
+          type: object
+        notes:
+          type: object
+        rating:
+          type: object
+    CreateTeaRequest:
+      type: object
+      title: CreateTeaRequest
+      properties:
+        caffeine_level:
+          type: object
+        description:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: string
+        origin:
+          type: object
+        steep_temp_celsius:
+          type: integer
+        steep_time_seconds:
+          type: integer
+        type:
+          type: object
+    CreateTeapotRequest:
+      type: object
+      title: CreateTeapotRequest
+      properties:
+        capacity_ml:
+          type: integer
+        description:
+          type: object
+        material:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: string
+        style:
+          type: object
+    ErrorResponse:
+      type: object
+      title: ErrorResponse
+      properties:
+        code:
+          type: string
+        details:
+          type: object
+        message:
+          type: string
+    HealthCheck:
+      type: object
+      title: HealthCheck
+      properties:
+        latency_ms:
+          type: object
+        message:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: string
+        status:
+          type: object
+    HealthResponse:
+      type: object
+      title: HealthResponse
+      properties:
+        checks:
+          type: array
+          items:
+            type: object
+        status:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: object
+    PaginatedResponse:
+      type: object
+      title: PaginatedResponse
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+      required:
+        - data
+        - pagination
+    Pagination:
+      type: object
+      title: Pagination
+      properties:
+        limit:
+          type: integer
+        model_config:
+          type: object
+        page:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+    PaginationQuery:
+      type: object
+      title: PaginationQuery
+      properties:
+        limit:
+          type: integer
+        page:
+          type: integer
+    PatchBrewRequest:
+      type: object
+      title: PatchBrewRequest
+      properties:
+        completed_at:
+          type: object
+        model_config:
+          type: object
+        notes:
+          type: object
+        status:
+          type: object
+    PatchTeaRequest:
+      type: object
+      title: PatchTeaRequest
+      properties:
+        caffeine_level:
+          type: object
+        description:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: object
+        origin:
+          type: object
+        steep_temp_celsius:
+          type: object
+        steep_time_seconds:
+          type: object
+        type:
+          type: object
+    PatchTeapotRequest:
+      type: object
+      title: PatchTeapotRequest
+      properties:
+        capacity_ml:
+          type: object
+        description:
+          type: object
+        material:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: object
+        style:
+          type: object
+    Steep:
+      type: object
+      title: Steep
+      properties:
+        brew_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        duration_seconds:
+          type: integer
+        id:
+          type: string
+        model_config:
+          type: object
+        notes:
+          type: object
+        rating:
+          type: object
+        steep_number:
+          type: integer
+    Tea:
+      type: object
+      title: Tea
+      properties:
+        caffeine_level:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        description:
+          type: object
+        id:
+          type: string
+        model_config:
+          type: object
+        name:
+          type: string
+        origin:
+          type: object
+        steep_temp_celsius:
+          type: integer
+        steep_time_seconds:
+          type: integer
+        type:
+          type: object
+        updated_at:
+          type: string
+          format: date-time
+    TeaQuery:
+      type: object
+      title: TeaQuery
+      properties:
+        caffeine_level:
+          type: object
+        limit:
+          type: integer
+        model_config:
+          type: object
+        page:
+          type: integer
+        type:
+          type: object
+    Teapot:
+      type: object
+      title: Teapot
+      properties:
+        capacity_ml:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        description:
+          type: object
+        id:
+          type: string
+        material:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: string
+        style:
+          type: object
+        updated_at:
+          type: string
+          format: date-time
+    TeapotErrorResponse:
+      type: object
+      title: TeapotErrorResponse
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        spec:
+          type: string
+    TeapotQuery:
+      type: object
+      title: TeapotQuery
+      properties:
+        limit:
+          type: integer
+        material:
+          type: object
+        page:
+          type: integer
+        style:
+          type: object
+    UpdateTeaRequest:
+      type: object
+      title: UpdateTeaRequest
+      properties:
+        caffeine_level:
+          type: object
+        description:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: string
+        origin:
+          type: object
+        steep_temp_celsius:
+          type: integer
+        steep_time_seconds:
+          type: integer
+        type:
+          type: object
+    UpdateTeapotRequest:
+      type: object
+      title: UpdateTeapotRequest
+      properties:
+        capacity_ml:
+          type: integer
+        description:
+          type: object
+        material:
+          type: object
+        model_config:
+          type: object
+        name:
+          type: string
+        style:
+          type: object
