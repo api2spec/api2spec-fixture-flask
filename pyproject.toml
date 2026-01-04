@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "api2spec-fixture-flask"
+version = "1.0.0"
+description = "Flask fixture API for api2spec. TIF-compliant."
+authors = ["llbbl"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.0.0"
+pydantic = "^2.9.0"
+uuid6 = "^2024.7.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-flask = "^1.3.0"
+httpx = "^0.27.0"
+mypy = "^1.11.0"
+ruff = "^0.6.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
