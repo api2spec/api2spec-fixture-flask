@@ -96,6 +96,44 @@ class TestListTeas:
         assert len(data["data"]) == 1
         assert data["data"][0]["caffeineLevel"] == "none"
 
+    def test_list_with_pagination(self, client: FlaskClient) -> None:
+        """Test pagination parameters for teas."""
+        # Create multiple teas
+        for i in range(5):
+            client.post(
+                "/teas",
+                json={
+                    "name": f"Tea {i}",
+                    "type": "green",
+                    "steepTempCelsius": 80,
+                    "steepTimeSeconds": 120,
+                },
+            )
+
+        response = client.get("/teas?page=1&limit=2")
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert len(data["data"]) == 2
+        assert data["pagination"]["total"] == 5
+        assert data["pagination"]["totalPages"] == 3
+
+    def test_list_invalid_page(self, client: FlaskClient) -> None:
+        """Test validation error for invalid page parameter."""
+        response = client.get("/teas?page=0")
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_list_limit_exceeds_max(self, client: FlaskClient) -> None:
+        """Test validation error for limit exceeding maximum."""
+        response = client.get("/teas?limit=200")
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
 
 class TestCreateTea:
     """Tests for POST /teas."""
@@ -184,6 +222,34 @@ class TestCreateTea:
 
         assert response.status_code == 400
 
+    def test_create_temp_too_high(self, client: FlaskClient) -> None:
+        """Test validation error for temperature above maximum."""
+        response = client.post(
+            "/teas",
+            json={
+                "name": "Hot Tea",
+                "type": "black",
+                "steepTempCelsius": 110,  # Above max of 100
+                "steepTimeSeconds": 240,
+            },
+        )
+
+        assert response.status_code == 400
+
+    def test_create_steep_time_too_long(self, client: FlaskClient) -> None:
+        """Test validation error for steep time exceeding maximum."""
+        response = client.post(
+            "/teas",
+            json={
+                "name": "Long Steep Tea",
+                "type": "green",
+                "steepTempCelsius": 80,
+                "steepTimeSeconds": 1000,  # Above max of 600
+            },
+        )
+
+        assert response.status_code == 400
+
 
 class TestGetTea:
     """Tests for GET /teas/<id>."""
@@ -267,6 +333,61 @@ class TestUpdateTea:
 
         assert response.status_code == 404
 
+    def test_update_validation_error(self, client: FlaskClient) -> None:
+        """Test validation error on update with missing fields."""
+        # Create a tea first
+        create_response = client.post(
+            "/teas",
+            json={
+                "name": "Original Tea",
+                "type": "green",
+                "steepTempCelsius": 80,
+                "steepTimeSeconds": 120,
+            },
+        )
+        tea_id = create_response.get_json()["id"]
+
+        response = client.put(
+            f"/teas/{tea_id}",
+            json={
+                "name": "Updated Name",
+                # Missing required fields
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_update_invalid_caffeine_level(self, client: FlaskClient) -> None:
+        """Test validation error for invalid caffeine level on update."""
+        # Create a tea first
+        create_response = client.post(
+            "/teas",
+            json={
+                "name": "Original Tea",
+                "type": "green",
+                "steepTempCelsius": 80,
+                "steepTimeSeconds": 120,
+            },
+        )
+        tea_id = create_response.get_json()["id"]
+
+        response = client.put(
+            f"/teas/{tea_id}",
+            json={
+                "name": "Updated Tea",
+                "type": "black",
+                "caffeineLevel": "extreme",  # Invalid value
+                "steepTempCelsius": 95,
+                "steepTimeSeconds": 240,
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
 
 class TestPatchTea:
     """Tests for PATCH /teas/<id>."""
@@ -305,6 +426,52 @@ class TestPatchTea:
         )
 
         assert response.status_code == 404
+
+    def test_patch_invalid_type(self, client: FlaskClient) -> None:
+        """Test validation error for invalid type in patch."""
+        # Create a tea first
+        create_response = client.post(
+            "/teas",
+            json={
+                "name": "Original Tea",
+                "type": "green",
+                "steepTempCelsius": 80,
+                "steepTimeSeconds": 120,
+            },
+        )
+        tea_id = create_response.get_json()["id"]
+
+        response = client.patch(
+            f"/teas/{tea_id}",
+            json={"type": "coffee"},  # Invalid type
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_patch_temp_out_of_range(self, client: FlaskClient) -> None:
+        """Test validation error for temperature out of range in patch."""
+        # Create a tea first
+        create_response = client.post(
+            "/teas",
+            json={
+                "name": "Original Tea",
+                "type": "green",
+                "steepTempCelsius": 80,
+                "steepTimeSeconds": 120,
+            },
+        )
+        tea_id = create_response.get_json()["id"]
+
+        response = client.patch(
+            f"/teas/{tea_id}",
+            json={"steepTempCelsius": 150},  # Above max of 100
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
 
 
 class TestDeleteTea:

@@ -1,0 +1,23 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  dev:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: bash
+    stdin_open: true
+    tty: true
+
+  test:
+    build: .
+    volumes:
+      - .:/app
+    command: poetry run pytest

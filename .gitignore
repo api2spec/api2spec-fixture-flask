@@ -79,3 +79,6 @@ dmypy.json
 
 # Local development
 *.local
+
+# Claude Code
+.claude/

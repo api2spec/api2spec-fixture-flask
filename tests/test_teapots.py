@@ -88,6 +88,51 @@ class TestListTeapots:
         assert data["pagination"]["total"] == 5
         assert data["pagination"]["totalPages"] == 3
 
+    def test_list_with_style_filter(self, client: FlaskClient) -> None:
+        """Test filtering teapots by style."""
+        # Create teapots with different styles
+        client.post(
+            "/teapots",
+            json={
+                "name": "English Pot",
+                "material": "ceramic",
+                "capacityMl": 500,
+                "style": "english",
+            },
+        )
+        client.post(
+            "/teapots",
+            json={
+                "name": "Kyusu Pot",
+                "material": "clay",
+                "capacityMl": 350,
+                "style": "kyusu",
+            },
+        )
+
+        response = client.get("/teapots?style=kyusu")
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert len(data["data"]) == 1
+        assert data["data"][0]["style"] == "kyusu"
+
+    def test_list_invalid_pagination(self, client: FlaskClient) -> None:
+        """Test validation error for invalid pagination parameters."""
+        response = client.get("/teapots?page=0")
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_list_limit_exceeds_max(self, client: FlaskClient) -> None:
+        """Test validation error for limit exceeding maximum."""
+        response = client.get("/teapots?limit=200")
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
 
 class TestCreateTeapot:
     """Tests for POST /teapots."""
@@ -334,6 +379,52 @@ class TestPatchTeapot:
         )
 
         assert response.status_code == 404
+
+    def test_patch_invalid_material(self, client: FlaskClient) -> None:
+        """Test validation error for invalid material in patch."""
+        # Create a teapot first
+        create_response = client.post(
+            "/teapots",
+            json={
+                "name": "Original Name",
+                "material": "ceramic",
+                "capacityMl": 500,
+                "style": "english",
+            },
+        )
+        teapot_id = create_response.get_json()["id"]
+
+        response = client.patch(
+            f"/teapots/{teapot_id}",
+            json={"material": "plastic"},
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_patch_capacity_too_large(self, client: FlaskClient) -> None:
+        """Test validation error for capacity exceeding max in patch."""
+        # Create a teapot first
+        create_response = client.post(
+            "/teapots",
+            json={
+                "name": "Original Name",
+                "material": "ceramic",
+                "capacityMl": 500,
+                "style": "english",
+            },
+        )
+        teapot_id = create_response.get_json()["id"]
+
+        response = client.patch(
+            f"/teapots/{teapot_id}",
+            json={"capacityMl": 10000},
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
 
 
 class TestDeleteTeapot:

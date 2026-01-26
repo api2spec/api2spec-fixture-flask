@@ -106,6 +106,56 @@ class TestListBrews:
         assert len(data["data"]) == 1
         assert data["data"][0]["teapotId"] == teapot_id
 
+    def test_list_with_tea_filter(
+        self, client: FlaskClient, teapot_id: str, tea_id: str
+    ) -> None:
+        """Test filtering brews by tea ID."""
+        # Create a brew
+        client.post(
+            "/brews",
+            json={
+                "teapotId": teapot_id,
+                "teaId": tea_id,
+            },
+        )
+
+        response = client.get(f"/brews?teaId={tea_id}")
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert len(data["data"]) == 1
+        assert data["data"][0]["teaId"] == tea_id
+
+    def test_list_with_pagination(
+        self, client: FlaskClient, teapot_id: str, tea_id: str
+    ) -> None:
+        """Test pagination parameters for brews."""
+        # Create multiple brews
+        for _ in range(5):
+            client.post(
+                "/brews",
+                json={
+                    "teapotId": teapot_id,
+                    "teaId": tea_id,
+                },
+            )
+
+        response = client.get("/brews?page=1&limit=2")
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert len(data["data"]) == 2
+        assert data["pagination"]["total"] == 5
+        assert data["pagination"]["totalPages"] == 3
+
+    def test_list_invalid_page(self, client: FlaskClient) -> None:
+        """Test validation error for invalid page parameter."""
+        response = client.get("/brews?page=0")
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
 
 class TestCreateBrew:
     """Tests for POST /brews."""
@@ -197,6 +247,49 @@ class TestCreateBrew:
         assert data["code"] == "NOT_FOUND"
         assert "Tea" in data["message"]
 
+    def test_create_missing_teapot_id(self, client: FlaskClient, tea_id: str) -> None:
+        """Test validation error when teapotId is missing."""
+        response = client.post(
+            "/brews",
+            json={
+                "teaId": tea_id,
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_create_missing_tea_id(self, client: FlaskClient, teapot_id: str) -> None:
+        """Test validation error when teaId is missing."""
+        response = client.post(
+            "/brews",
+            json={
+                "teapotId": teapot_id,
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_create_invalid_water_temp(
+        self, client: FlaskClient, teapot_id: str, tea_id: str
+    ) -> None:
+        """Test validation error for water temp out of range."""
+        response = client.post(
+            "/brews",
+            json={
+                "teapotId": teapot_id,
+                "teaId": tea_id,
+                "waterTempCelsius": 150,  # Above max of 100
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
 
 class TestGetBrew:
     """Tests for GET /brews/<id>."""
@@ -285,6 +378,29 @@ class TestPatchBrew:
         )
 
         assert response.status_code == 404
+
+    def test_patch_invalid_status(
+        self, client: FlaskClient, teapot_id: str, tea_id: str
+    ) -> None:
+        """Test validation error for invalid status in patch."""
+        # Create a brew first
+        create_response = client.post(
+            "/brews",
+            json={
+                "teapotId": teapot_id,
+                "teaId": tea_id,
+            },
+        )
+        brew_id = create_response.get_json()["id"]
+
+        response = client.patch(
+            f"/brews/{brew_id}",
+            json={"status": "invalid-status"},
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
 
 
 class TestDeleteBrew:
@@ -419,3 +535,62 @@ class TestSteeps:
             json={"durationSeconds": 60},
         )
         assert response.status_code == 404
+
+    def test_create_steep_missing_duration(self, client: FlaskClient, brew_id: str) -> None:
+        """Test validation error when duration is missing."""
+        response = client.post(
+            f"/brews/{brew_id}/steeps",
+            json={
+                "rating": 4,
+                "notes": "Missing duration",
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_create_steep_invalid_rating(self, client: FlaskClient, brew_id: str) -> None:
+        """Test validation error for rating out of range."""
+        response = client.post(
+            f"/brews/{brew_id}/steeps",
+            json={
+                "durationSeconds": 60,
+                "rating": 10,  # Above max of 5
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_create_steep_rating_too_low(self, client: FlaskClient, brew_id: str) -> None:
+        """Test validation error for rating below minimum."""
+        response = client.post(
+            f"/brews/{brew_id}/steeps",
+            json={
+                "durationSeconds": 60,
+                "rating": 0,  # Below min of 1
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["code"] == "VALIDATION_ERROR"
+
+    def test_list_steeps_with_pagination(self, client: FlaskClient, brew_id: str) -> None:
+        """Test pagination for steeps listing."""
+        # Create multiple steeps
+        for _ in range(5):
+            client.post(
+                f"/brews/{brew_id}/steeps",
+                json={"durationSeconds": 60},
+            )
+
+        response = client.get(f"/brews/{brew_id}/steeps?page=1&limit=2")
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert len(data["data"]) == 2
+        assert data["pagination"]["total"] == 5
+        assert data["pagination"]["totalPages"] == 3
